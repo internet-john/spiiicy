@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useRef } from 'react';
 import { Dimensions, StyleSheet, Text, View, FlatList } from 'react-native';
-import { Header, Input, ListItem, Icon, Button } from 'react-native-elements';
+import { Header, Input, ListItem, Button, BottomSheet } from 'react-native-elements';
+import OptionsIcon from 'react-native-vector-icons/SimpleLineIcons';
 
 export default function App() {
   let taskList = [];
@@ -9,9 +10,9 @@ export default function App() {
   const [list, setList] = useState(taskList)
   const [input, updateInput] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [focusedTask, setFocusedTask] = useState(null)
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [isSelectionOverlayVisible, setIsSelectionOverlayVisible] = useState(false);
+  const [userSelectedTask, setUserSelectedTask] = useState(null);
+  const [randomlySelectedTask, setRandomlySelectedTask] = useState(null);
+  const [isTaskOptionsDrawerVisible, setIsTaskOptionsDrawerVisible] = useState(false);
 
   const handleChangeText = value => updateInput(value);
 
@@ -24,53 +25,74 @@ export default function App() {
 
   const handleSubmitEdit = () => {
     const newList = list.map(listItem => {
-      if (listItem.id === focusedTask.id) listItem.value = input;
+      if (listItem.id === userSelectedTask.id) listItem.value = input;
 
       return listItem;
     })
 
+    setUserSelectedTask(null);
+    setRandomlySelectedTask(null);
     setList(newList);
     toggleEditMode();
   }
 
   const handleEditTask = (item) => {
-    toggleEditMode(); setFocusedTask(item);
+    updateInput(item.value)
+    toggleTaskOptionsDrawer();
+    toggleEditMode();
   }
 
-  const handleRemoveTask = (item) => {
-    const newList = list.filter(listItem => listItem.id !== item.id);
+  const handleRemoveTask = () => {
+    const newList = list.filter(listItem => listItem.id !== userSelectedTask.id);
 
+    setUserSelectedTask(null);
+    setRandomlySelectedTask(null);
     setList(newList);
+    toggleTaskOptionsDrawer();
   }
 
   const handlePressRandomIdea = () =>
-    setSelectedTask(list[Math.floor(Math.random() * Math.floor(list.length - 1))]);
+    setRandomlySelectedTask(list[Math.floor(Math.random() * Math.floor(list.length - 1))]);
 
 
   const keyExtractor = (item, index) => index.toString();
 
   const toggleEditMode = () => setIsEditing(!isEditing);
 
+  const toggleTaskOptionsDrawer = () => setIsTaskOptionsDrawerVisible(!isTaskOptionsDrawerVisible);
+
+  const displayTaskOptions = (item) => {
+    toggleTaskOptionsDrawer();
+    setUserSelectedTask(item);
+  }
+
   const renderItem = ({ item }) =>
-    <ListItem containerStyle={selectedTask && item.id === selectedTask.id ? styles.selectedTaskEntryContainer : styles.taskEntryContainer}>
-      {isEditing && item.id === focusedTask.id ?
-        <Input
-          style={styles.input}
-          inputContainerStyle={styles.inputContainerStyle}
-          clearButtonMode={'while-editing'}
-          autoFocus={true}
-          placeholder={item.value}
-          placeholderTextColor={'#606060'}
-          onChangeText={handleChangeText}
-          onSubmitEditing={handleSubmitEdit}
-          onEndEditing={toggleEditMode}
-        />
-        : <Text style={selectedTask && item.id === selectedTask.id ? styles.selectedTaskEntry : styles.taskEntry}>{item.value}</Text>}
-      <View style={styles.taskEntryOps}>
-        <Icon name='edit' color='#fff' onPress={() => handleEditTask(item)} />
-        <Icon name='delete' color='#fff' onPress={() => handleRemoveTask(item)} />
-      </View>
-    </ListItem>
+    <View>
+      <ListItem containerStyle={randomlySelectedTask && randomlySelectedTask.id === item.id ? styles.selectedTaskEntryContainer : styles.taskEntryContainer}>
+        {isEditing && item.id === userSelectedTask.id ?
+          <Input
+            style={styles.input}
+            inputContainerStyle={styles.editInputContainerStyle}
+            clearButtonMode={'while-editing'}
+            autoFocus={true}
+            autoCorrect={false}
+            placeholder={item.value}
+            placeholderTextColor={'#FFF'}
+            onChangeText={handleChangeText}
+            onSubmitEditing={handleSubmitEdit}
+            onEndEditing={toggleEditMode}
+          />
+          : <><Text style={userSelectedTask && item.id === userSelectedTask.id ? styles.selectedTaskEntry : styles.taskEntry}>{item.value}</Text><View style={styles.taskEntryOps}>
+            <OptionsIcon name="options" size={20} color={'#FFF'} onPress={() => displayTaskOptions(item)} />
+          </View></>}
+
+      </ListItem>
+      {isTaskOptionsDrawerVisible && item.id === userSelectedTask.id && <View style={styles.taskEntryOpsDrawer}>
+        <Button title="Edit" onPress={() => handleEditTask(item)} buttonStyle={styles.opsDrawerButton} titleStyle={styles.opsDrawerButtonText} />
+        <Button title="Delete" onPress={handleRemoveTask} buttonStyle={styles.opsDrawerButton} titleStyle={styles.opsDrawerButtonText} />
+        <Button title="Cancel" onPress={toggleTaskOptionsDrawer} buttonStyle={styles.opsDrawerButton} titleStyle={styles.opsDrawerButtonText} />
+      </View>}
+    </View>
 
   return (
     <View style={styles.container}>
@@ -100,6 +122,7 @@ export default function App() {
         data={list}
         renderItem={renderItem}
       />
+
     </View>
   );
 }
@@ -108,8 +131,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#101010',
-    alignItems: 'center',
-    justifyContent: 'center',
+    textAlign: 'center'
   },
   header: {
     backgroundColor: '#101010',
@@ -129,6 +151,9 @@ const styles = StyleSheet.create({
   inputContainerStyle: {
     borderBottomWidth: 0,
   },
+  editInputContainerStyle: {
+    marginLeft: -10
+  },
   clearInputButton: {
     color: '#FFF'
   },
@@ -137,11 +162,12 @@ const styles = StyleSheet.create({
     marginBottom: 12.5,
     borderColor: '#ECEEF1',
     borderWidth: .8,
-    borderRadius: 2.5
+    borderRadius: 2.5,
+    marginLeft: 10,
+    marginRight: 10
   },
   randomIdeaButton: {
     backgroundColor: '#000',
-    padding: 5,
     width: Dimensions.get('window').width * .95,
   },
   randomButtonTitle: {
@@ -149,7 +175,8 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
   taskList: {
-    flex: 1
+    flex: 1,
+    marginLeft: 10
   },
   taskEntry: {
     color: '#fff',
@@ -188,5 +215,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     paddingRight: 10,
+  },
+
+  opsDrawerButton: {
+    backgroundColor: '#000'
+  },
+  opsDrawerButtonText: {
+    color: '#FFF',
+    fontSize: 15
   },
 });
