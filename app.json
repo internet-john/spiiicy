@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
-      "backgroundColor": "#101010101010"
+      "backgroundColor": "#000"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -16,16 +16,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#101010101010"
-      }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.xavilabs.spicy"
     }
   }
 }
