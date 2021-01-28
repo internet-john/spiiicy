@@ -1,128 +1,214 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState, useRef } from 'react';
-import { Dimensions, StyleSheet, Text, View, FlatList } from 'react-native';
-import { Header, Input, ListItem, Button, BottomSheet } from 'react-native-elements';
-import OptionsIcon from 'react-native-vector-icons/SimpleLineIcons';
+import { StatusBar } from "expo-status-bar";
+import React, { useState, useRef } from "react";
+import { Dimensions, StyleSheet, Text, View, FlatList } from "react-native";
+import { Header, Input, ListItem, Button, Icon } from "react-native-elements";
+import OptionsIcon from "react-native-vector-icons/SimpleLineIcons";
 
 export default function App() {
   let taskList = [];
   let inputRef = useRef(null);
-  const [list, setList] = useState(taskList)
-  const [input, updateInput] = useState('');
+  let editInputRef = useRef(null);
+  const [list, setList] = useState(taskList);
+  const [input, updateInput] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [userSelectedTask, setUserSelectedTask] = useState(null);
   const [randomlySelectedTask, setRandomlySelectedTask] = useState(null);
-  const [isTaskOptionsDrawerVisible, setIsTaskOptionsDrawerVisible] = useState(false);
+  const [isTaskOptionsDrawerVisible, setIsTaskOptionsDrawerVisible] = useState(
+    false
+  );
 
-  const handleChangeText = value => updateInput(value);
+  const handleChangeText = (value) => updateInput(value);
 
   const handleSubmit = () => {
     const newList = list.concat({ value: input, id: list.length });
-    inputRef && inputRef.current && inputRef.current.clear();
+    if (inputRef && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.clear();
+    }
 
     setList(newList);
-  }
+  };
 
   const handleSubmitEdit = () => {
-    const newList = list.map(listItem => {
+    const newList = list.map((listItem) => {
       if (listItem.id === userSelectedTask.id) listItem.value = input;
 
       return listItem;
-    })
+    });
 
     setUserSelectedTask(null);
     setRandomlySelectedTask(null);
     setList(newList);
     toggleEditMode();
-  }
+  };
 
   const handleEditTask = (item) => {
-    updateInput(item.value)
+    updateInput(item.value);
     toggleTaskOptionsDrawer();
     toggleEditMode();
-  }
+  };
 
   const handleRemoveTask = () => {
-    const newList = list.filter(listItem => listItem.id !== userSelectedTask.id);
+    const newList = list.filter(
+      (listItem) => listItem.id !== userSelectedTask.id
+    );
 
     setUserSelectedTask(null);
     setRandomlySelectedTask(null);
     setList(newList);
     toggleTaskOptionsDrawer();
-  }
+  };
 
-  const handlePressRandomIdea = () =>
-    setRandomlySelectedTask(list[Math.floor(Math.random() * Math.floor(list.length - 1))]);
+  const determineEligibleList = () =>
+    list.slice().filter((entry) => entry.id !== randomlySelectedTask.id);
 
+  const handlePressRandomIdea = () => {
+    let eligibleList = list.slice();
+    if (randomlySelectedTask) eligibleList = determineEligibleList();
+    setRandomlySelectedTask(
+      eligibleList[Math.floor(Math.random() * Math.floor(eligibleList.length))]
+    );
+  };
 
   const keyExtractor = (item, index) => index.toString();
 
   const toggleEditMode = () => setIsEditing(!isEditing);
 
-  const toggleTaskOptionsDrawer = () => setIsTaskOptionsDrawerVisible(!isTaskOptionsDrawerVisible);
+  const toggleTaskOptionsDrawer = () =>
+    setIsTaskOptionsDrawerVisible(!isTaskOptionsDrawerVisible);
 
   const displayTaskOptions = (item) => {
     toggleTaskOptionsDrawer();
     setUserSelectedTask(item);
-  }
+  };
 
-  const renderItem = ({ item }) =>
+  const renderItem = ({ item }) => (
     <View>
-      <ListItem containerStyle={randomlySelectedTask && randomlySelectedTask.id === item.id ? styles.selectedTaskEntryContainer : styles.taskEntryContainer}>
-        {isEditing && item.id === userSelectedTask.id ?
+      <ListItem
+        containerStyle={
+          randomlySelectedTask && randomlySelectedTask.id === item.id
+            ? styles.selectedTaskEntryContainer
+            : styles.taskEntryContainer
+        }
+      >
+        {isEditing && item.id === userSelectedTask.id ? (
           <Input
+            ref={editInputRef}
+            rightIcon={
+              <Icon
+                iconStyle={styles.clearInputButton}
+                color={"#808080"}
+                size={16}
+                type={"antdesign"}
+                name={"closecircle"}
+                onPress={handleClearEditInput}
+              />
+            }
             style={styles.input}
             inputContainerStyle={styles.editInputContainerStyle}
-            clearButtonMode={'while-editing'}
             autoFocus={true}
             autoCorrect={false}
             placeholder={item.value}
-            placeholderTextColor={'#FFF'}
+            placeholderTextColor={"#FFF"}
             onChangeText={handleChangeText}
             onSubmitEditing={handleSubmitEdit}
             onEndEditing={toggleEditMode}
+            enablesReturnKeyAutomatically={true}
           />
-          : <><Text style={userSelectedTask && item.id === userSelectedTask.id ? styles.selectedTaskEntry : styles.taskEntry}>{item.value}</Text><View style={styles.taskEntryOps}>
-            <OptionsIcon name="options" size={20} color={'#FFF'} onPress={() => displayTaskOptions(item)} />
-          </View></>}
-
+        ) : (
+          <>
+            <Text
+              style={
+                userSelectedTask && item.id === userSelectedTask.id
+                  ? styles.selectedTaskEntry
+                  : styles.taskEntry
+              }
+            >
+              {item.value}
+            </Text>
+            <View style={styles.taskEntryOps}>
+              <OptionsIcon
+                name="options"
+                size={20}
+                color={"#FFF"}
+                onPress={() => displayTaskOptions(item)}
+              />
+            </View>
+          </>
+        )}
       </ListItem>
-      {isTaskOptionsDrawerVisible && item.id === userSelectedTask.id && <View style={styles.taskEntryOpsDrawer}>
-        <Button title="Edit" onPress={() => handleEditTask(item)} buttonStyle={styles.opsDrawerButton} titleStyle={styles.opsDrawerButtonText} />
-        <Button title="Delete" onPress={handleRemoveTask} buttonStyle={styles.opsDrawerButton} titleStyle={styles.opsDrawerButtonText} />
-        <Button title="Cancel" onPress={toggleTaskOptionsDrawer} buttonStyle={styles.opsDrawerButton} titleStyle={styles.opsDrawerButtonText} />
-      </View>}
+      {isTaskOptionsDrawerVisible && item.id === userSelectedTask.id && (
+        <View style={styles.taskEntryOpsDrawer}>
+          <Button
+            title="Edit"
+            onPress={() => handleEditTask(item)}
+            buttonStyle={styles.opsDrawerButton}
+            titleStyle={styles.opsDrawerButtonText}
+          />
+          <Button
+            title="Delete"
+            onPress={handleRemoveTask}
+            buttonStyle={styles.opsDrawerButton}
+            titleStyle={styles.opsDrawerButtonText}
+          />
+          <Button
+            title="Cancel"
+            onPress={toggleTaskOptionsDrawer}
+            buttonStyle={styles.opsDrawerButton}
+            titleStyle={styles.opsDrawerButtonText}
+          />
+        </View>
+      )}
     </View>
+  );
+
+  const handleClearInput = () => inputRef.current.clear();
+
+  const handleClearEditInput = () => editInputRef.current.clear();
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <Header centerComponent={{ text: '¡spiiicy!', style: styles.headerText }} containerStyle={styles.header} />
+      <Header
+        centerComponent={{ text: "¡spiiicy!", style: styles.headerText }}
+        containerStyle={styles.header}
+      />
       <Input
         style={styles.input}
         inputContainerStyle={styles.inputContainerStyle}
+        rightIcon={
+          <Icon
+            iconStyle={styles.clearInputButton}
+            color={"#808080"}
+            size={16}
+            type={"antdesign"}
+            name={"closecircle"}
+            onPress={handleClearInput}
+          />
+        }
         ref={inputRef}
-        clearButtonMode={'while-editing'}
         autoFocus={true}
-        placeholder={'Enter an idea here'}
-        placeholderTextColor={'#DADADA'}
+        placeholder={"Enter an idea here"}
+        placeholderTextColor={"#DADADA"}
         onChangeText={handleChangeText}
         onSubmitEditing={handleSubmit}
+        enablesReturnKeyAutomatically={true}
       />
-      {list.length >= 2 && !isEditing && <Button
-        buttonStyle={styles.randomIdeaButton}
-        containerStyle={styles.randomIdeaButtonContainer}
-        titleStyle={styles.randomButtonTitle}
-        title="Select random idea"
-        onPress={handlePressRandomIdea}
-      />}
+      {list.length >= 2 && !isEditing && (
+        <Button
+          buttonStyle={styles.randomIdeaButton}
+          containerStyle={styles.randomIdeaButtonContainer}
+          titleStyle={styles.randomButtonTitle}
+          title="Select random idea"
+          onPress={handlePressRandomIdea}
+        />
+      )}
       <FlatList
         style={styles.taskList}
         keyExtractor={keyExtractor}
         data={list}
         renderItem={renderItem}
       />
-
     </View>
   );
 }
@@ -130,98 +216,106 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#101010',
-    textAlign: 'center'
+    backgroundColor: "#101010",
+    textAlign: "center",
   },
   header: {
-    backgroundColor: '#101010',
+    backgroundColor: "#101010",
     borderBottomWidth: 0,
     marginTop: 50,
-    marginBottom: 10
+    marginBottom: 10,
   },
   headerText: {
-    color: 'red', fontSize: 32, fontWeight: '800', letterSpacing: -2.5
+    color: "red",
+    fontSize: 32,
+    fontWeight: "800",
+    letterSpacing: -2.5,
   },
   input: {
-    color: '#FFF',
-    backgroundColor: '#252525',
+    color: "#FFF",
+    backgroundColor: "#252525",
     borderRadius: 5,
-    padding: 10
+    padding: 10,
   },
   inputContainerStyle: {
     borderBottomWidth: 0,
+    color: "#FFF",
   },
   editInputContainerStyle: {
-    marginLeft: -10
+    marginLeft: -10,
+    marginRight: 5,
+    marginBottom: -20,
+    borderBottomWidth: 0,
+    maxHeight: 40,
   },
   clearInputButton: {
-    color: '#FFF'
+    marginLeft: 10,
   },
   randomIdeaButtonContainer: {
     marginTop: -10,
     marginBottom: 12.5,
-    borderColor: '#ECEEF1',
-    borderWidth: .8,
+    borderColor: "#ECEEF1",
+    borderWidth: 0.8,
     borderRadius: 2.5,
     marginLeft: 10,
-    marginRight: 10
+    marginRight: 10,
   },
   randomIdeaButton: {
-    backgroundColor: '#000',
-    width: Dimensions.get('window').width * .95,
+    backgroundColor: "#000",
+    width: Dimensions.get("window").width * 0.95,
   },
   randomButtonTitle: {
     fontSize: 15,
-    fontWeight: '600'
+    fontWeight: "600",
   },
   taskList: {
     flex: 1,
-    marginLeft: 10
+    marginLeft: 10,
   },
   taskEntry: {
-    color: '#fff',
-    display: 'flex',
+    color: "#fff",
+    display: "flex",
     paddingLeft: 5,
     fontSize: 16,
-    fontWeight: '600'
+    fontWeight: "600",
   },
   taskEntryContainer: {
-    backgroundColor: '#000',
-    width: Dimensions.get('window').width * .95,
+    backgroundColor: "#000",
+    width: Dimensions.get("window").width * 0.95,
     borderRadius: 5,
     marginBottom: 5,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   selectedTaskEntry: {
-    color: '#fff',
-    display: 'flex',
+    color: "#fff",
+    display: "flex",
     paddingLeft: 5,
     fontSize: 18,
-    fontWeight: '600'
+    fontWeight: "600",
   },
   selectedTaskEntryContainer: {
-    backgroundColor: 'red',
-    width: Dimensions.get('window').width * .95,
+    backgroundColor: "red",
+    width: Dimensions.get("window").width * 0.95,
     borderRadius: 5,
     marginBottom: 5,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 20,
   },
   taskEntryOps: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     paddingRight: 10,
   },
 
   opsDrawerButton: {
-    backgroundColor: '#000'
+    backgroundColor: "#000",
   },
   opsDrawerButtonText: {
-    color: '#FFF',
-    fontSize: 15
+    color: "#FFF",
+    fontSize: 15,
   },
 });
