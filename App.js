@@ -1,8 +1,10 @@
 import { StatusBar } from "expo-status-bar";
 import React, { useState, useRef } from "react";
 import { Dimensions, StyleSheet, Text, View, FlatList } from "react-native";
-import { Header, Input, ListItem, Button, Icon } from "react-native-elements";
+import { Input, ListItem, Button, Icon } from "react-native-elements";
 import OptionsIcon from "react-native-vector-icons/SimpleLineIcons";
+
+import AppHeader from "./src/components/AppHeader";
 
 export default function App() {
   let taskList = [];
@@ -91,6 +93,7 @@ export default function App() {
             : styles.taskEntryContainer
         }
       >
+        {/* // <Idea isEditMode/> */}
         {isEditing && item.id === userSelectedTask.id ? (
           <Input
             ref={editInputRef}
@@ -117,6 +120,7 @@ export default function App() {
           />
         ) : (
           <>
+            {/* <Idea> */}
             <Text
               style={
                 userSelectedTask && item.id === userSelectedTask.id
@@ -134,9 +138,11 @@ export default function App() {
                 onPress={() => displayTaskOptions(item)}
               />
             </View>
+            {/* <Idea /> */}
           </>
         )}
       </ListItem>
+      {/* <IdeaOptionsDrawer> */}
       {isTaskOptionsDrawerVisible && item.id === userSelectedTask.id && (
         <View style={styles.taskEntryOpsDrawer}>
           <Button
@@ -160,6 +166,7 @@ export default function App() {
         </View>
       )}
     </View>
+    // </IdeaOptionsDrawer>
   );
 
   const handleClearInput = () => inputRef.current.clear();
@@ -169,10 +176,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <Header
-        centerComponent={{ text: "¡spiiicy!", style: styles.headerText }}
-        containerStyle={styles.header}
-      />
+      <AppHeader />
+      {/* <IdeaInput> */}
       <Input
         style={styles.input}
         inputContainerStyle={styles.inputContainerStyle}
@@ -203,12 +208,15 @@ export default function App() {
           onPress={handlePressRandomIdea}
         />
       )}
+      {/* </IdeaInput> */}
+      {/* <IdeaList> */}
       <FlatList
         style={styles.taskList}
         keyExtractor={keyExtractor}
         data={list}
         renderItem={renderItem}
       />
+      {/* </IdeaList> */}
     </View>
   );
 }
@@ -218,18 +226,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#101010",
     textAlign: "center",
-  },
-  header: {
-    backgroundColor: "#101010",
-    borderBottomWidth: 0,
-    marginTop: 50,
-    marginBottom: 10,
-  },
-  headerText: {
-    color: "red",
-    fontSize: 32,
-    fontWeight: "800",
-    letterSpacing: -2.5,
   },
   input: {
     color: "#FFF",
