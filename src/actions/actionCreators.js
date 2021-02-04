@@ -1,43 +1,41 @@
-import {
-  CREATE_IDEA,
-  EDIT_IDEA,
-  DELETE_IDEA,
-  RANDOM_SELECT_IDEA,
-  TOGGLE_TASK_OPTIONS_DRAWER,
-  SELECT_IDEA,
-} from "./constants";
+import * as ACTION_TYPES from "./constants";
 
-const createIdea = (id, idx) => ({
-  type: CREATE_IDEA,
-  id,
+const createIdea = ({ idea, idx }) => ({
+  type: ACTION_TYPES.CREATE_IDEA,
+  idea,
   idx,
 });
 
-const userSelectIdea = (id, idx) => ({
-  type: SELECT_IDEA,
-  id,
-  idx,
-});
-
-const randomSelectIdea = (id) => ({
-  type: RANDOM_SELECT_IDEA,
+const userSelectIdea = (id) => ({
+  type: ACTION_TYPES.SELECT_IDEA,
   id,
 });
 
-const editIdea = (id, idx) => ({
-  type: EDIT_IDEA,
-  id,
-  idx,
+const randomSelectIdea = () => ({
+  type: ACTION_TYPES.RANDOM_SELECT_IDEA,
 });
 
-const deleteIdea = (id, idx) => ({
-  type: DELETE_IDEA,
+const editIdea = (id) => ({
+  type: ACTION_TYPES.EDIT_IDEA,
   id,
-  idx,
+});
+
+const commitEditIdea = (ideaObj) => ({
+  type: ACTION_TYPES.COMMIT_EDIT_IDEA,
+  ideaObj,
+});
+
+const deleteIdea = (id) => ({
+  type: ACTION_TYPES.DELETE_IDEA,
+  id,
 });
 
 const toggleTaskOptionsDrawer = () => ({
-  type: TOGGLE_TASK_OPTIONS_DRAWER,
+  type: ACTION_TYPES.TOGGLE_TASK_OPTIONS_DRAWER,
+});
+
+const toggleEditMode = () => ({
+  type: ACTION_TYPES.TOGGLE_EDIT_MODE,
 });
 
 export {
@@ -45,6 +43,8 @@ export {
   userSelectIdea,
   randomSelectIdea,
   editIdea,
+  commitEditIdea,
   deleteIdea,
   toggleTaskOptionsDrawer,
+  toggleEditMode,
 };
