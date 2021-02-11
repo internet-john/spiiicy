@@ -4,7 +4,7 @@ import { Dimensions, StyleSheet, Text, View } from "react-native";
 import { ListItem, Icon } from "react-native-elements";
 import OptionsIcon from "react-native-vector-icons/SimpleLineIcons";
 
-import { IdeaInput } from "../Input";
+import { IdeaInputEdit } from "../Input";
 import { userSelectIdea } from "../../actions/actionCreators";
 
 const Idea = ({ idea }) => {
@@ -37,7 +37,7 @@ const Idea = ({ idea }) => {
       idea &&
       userSelectedIdea &&
       idea.id === userSelectedIdea.id ? (
-        <IdeaInput idea={idea} />
+        <IdeaInputEdit idea={idea} />
       ) : (
         <>
           <Text

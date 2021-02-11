@@ -1,5 +1,4 @@
 import { ACTION_TYPES } from "../actions";
-import { randomSelectIdea } from "../actions/actionCreators";
 
 const initialState = {
   ideaList: [],
