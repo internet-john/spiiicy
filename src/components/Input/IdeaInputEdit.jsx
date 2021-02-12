@@ -8,9 +8,6 @@ import { commitEditIdea, toggleEditMode } from "../../actions/actionCreators";
 const IdeaInputEdit = ({ idea }) => {
   const editInputRef = useRef({});
   const dispatch = useDispatch();
-  const { ideaList, isEditMode, userSelectedIdea } = useSelector(
-    (state) => state
-  );
   const [input, updateInput] = useState("");
 
   const handleChangeText = (value) => updateInput(value);

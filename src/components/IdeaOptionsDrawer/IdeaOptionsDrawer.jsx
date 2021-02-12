@@ -12,11 +12,9 @@ import {
 
 const IdeaOptionsDrawer = ({ idea }) => {
   const dispatch = useDispatch();
-  const {
-    isEditMode,
-    userSelectedIdea,
-    isTaskOptionsDrawerVisible,
-  } = useSelector((state) => state);
+  const { userSelectedIdea, isTaskOptionsDrawerVisible } = useSelector(
+    (state) => state
+  );
 
   const handleEditIdea = () => dispatch(editIdea(idea.id));
 

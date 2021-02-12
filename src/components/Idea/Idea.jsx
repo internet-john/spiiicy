@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { ListItem, Icon } from "react-native-elements";
+import { ListItem } from "react-native-elements";
 import OptionsIcon from "react-native-vector-icons/SimpleLineIcons";
 
 import { IdeaInputEdit } from "../Input";
@@ -9,12 +9,9 @@ import { userSelectIdea } from "../../actions/actionCreators";
 
 const Idea = ({ idea }) => {
   const dispatch = useDispatch();
-  const {
-    randomSelectedIdea,
-    userSelectedIdea,
-    isEditMode,
-    isTaskOptionsDrawerVisible,
-  } = useSelector((state) => state);
+  const { randomSelectedIdea, userSelectedIdea, isEditMode } = useSelector(
+    (state) => state
+  );
 
   const handleClearEditInput = () => editInputRef.current.clear();
 
