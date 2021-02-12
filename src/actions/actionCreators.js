@@ -20,9 +20,9 @@ const editIdea = (id) => ({
   id,
 });
 
-const commitEditIdea = (ideaObj) => ({
+const commitEditIdea = (idea) => ({
   type: ACTION_TYPES.COMMIT_EDIT_IDEA,
-  ideaObj,
+  idea,
 });
 
 const deleteIdea = (id) => ({
@@ -38,6 +38,23 @@ const toggleEditMode = () => ({
   type: ACTION_TYPES.TOGGLE_EDIT_MODE,
 });
 
+const toggleIsLoading = () => ({
+  type: ACTION_TYPES.TOGGLE_IS_LOADING,
+});
+
+const fetchIdeas = () => ({
+  type: ACTION_TYPES.FETCH_IDEAS,
+});
+
+const fetchIdeasSuccess = (ideas) => ({
+  type: ACTION_TYPES.FETCH_IDEAS_SUCCESS,
+  ideas,
+});
+
+const fetchIdeasFailure = () => ({
+  type: ACTION_TYPES.FETCH_IDEAS_FAILURE,
+});
+
 export {
   createIdea,
   userSelectIdea,
@@ -47,4 +64,8 @@ export {
   deleteIdea,
   toggleTaskOptionsDrawer,
   toggleEditMode,
+  toggleIsLoading,
+  fetchIdeas,
+  fetchIdeasSuccess,
+  fetchIdeasFailure,
 };

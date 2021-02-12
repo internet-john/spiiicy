@@ -1,4 +1,5 @@
 import { put, select, takeLatest } from "redux-saga/effects";
+
 import { ACTION_CREATORS, ACTION_TYPES } from "../actions";
 
 function* selectIdea() {
@@ -18,11 +19,11 @@ function* deleteIdea() {
   yield put(ACTION_CREATORS.toggleTaskOptionsDrawer());
 }
 
-const appSaga = [
+const widgetToggleSaga = [
   takeLatest(ACTION_TYPES.SELECT_IDEA, selectIdea),
   takeLatest(ACTION_TYPES.EDIT_IDEA, editIdea),
   takeLatest(ACTION_TYPES.COMMIT_EDIT_IDEA, commitEditIdea),
   takeLatest(ACTION_TYPES.DELETE_IDEA, deleteIdea),
 ];
 
-export default appSaga;
+export default widgetToggleSaga;

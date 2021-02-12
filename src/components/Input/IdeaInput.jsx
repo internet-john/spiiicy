@@ -23,14 +23,8 @@ const IdeaInput = ({ idea }) => {
   const handleClearEditInput = () => editInputRef.current.clear();
 
   const handleSubmit = () => {
-    let idea;
-    /*
-    will be problematic on edits.
-     first check if idea exists in ideaList..
-     if so..retain id
-     */
-    idea = {
-      id: `id${input}`,
+    const idea = {
+      id: Date.now(),
       value: input,
     };
 

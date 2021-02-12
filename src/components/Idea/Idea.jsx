@@ -13,8 +13,6 @@ const Idea = ({ idea }) => {
     (state) => state
   );
 
-  const handleClearEditInput = () => editInputRef.current.clear();
-
   const handleSelectIdea = () => dispatch(userSelectIdea(idea));
 
   const determineIdeaContainerStyle = () => {

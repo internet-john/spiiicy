@@ -12,6 +12,7 @@ const initialState = {
   randomSelectedIdea: null,
   isEditMode: false,
   isTaskOptionsDrawerVisible: false,
+  isLoading: false,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -40,7 +41,7 @@ const rootReducer = (state = initialState, action) => {
     case ACTION_TYPES.COMMIT_EDIT_IDEA: {
       return {
         ...state,
-        ideaList: updateListItem(state.ideaList, action.ideaObj),
+        ideaList: updateListItem(state.ideaList, action.idea),
       };
     }
     case ACTION_TYPES.DELETE_IDEA: {
@@ -60,6 +61,24 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         isEditMode: !state.isEditMode,
+      };
+    }
+    case ACTION_TYPES.TOGGLE_IS_LOADING: {
+      return { ...state, isLoading: !state.isLoading };
+    }
+    case ACTION_TYPES.FETCH_IDEAS: {
+      return state;
+    }
+    case ACTION_TYPES.FETCH_IDEAS_SUCCESS: {
+      return {
+        ...state,
+        ideaList: action.ideas ? action.ideas : [],
+      };
+    }
+    case ACTION_TYPES.FETCH_IDEAS_FAILURE: {
+      return {
+        ...state,
+        error: "Ooops",
       };
     }
     default:
