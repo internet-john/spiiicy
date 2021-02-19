@@ -10,6 +10,7 @@ function* createIdea({ idea }) {
     const storageKey = JSON.stringify(idea.id);
     const jsonIdea = JSON.stringify(idea);
     yield call([AsyncStorage, "setItem"], storageKey, jsonIdea);
+    yield put(ACTION_CREATORS.toggleIsLoading());
   } catch (e) {
     console.log(e);
   }
