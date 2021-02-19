@@ -1,5 +1,10 @@
 import { ACTION_TYPES } from "../actions";
-import { randomSelectIdea } from "../actions/actionCreators";
+import {
+  insertListItem,
+  removeListItem,
+  updateListItem,
+  selectRandomIdea,
+} from "./utils";
 
 const initialState = {
   ideaList: [],
@@ -7,46 +12,7 @@ const initialState = {
   randomSelectedIdea: null,
   isEditMode: false,
   isTaskOptionsDrawerVisible: false,
-};
-
-const insertListItem = (list, action) => {
-  let newList = list.slice();
-  newList.splice(action.index, 0, action.idea);
-
-  return newList;
-};
-
-const removeListItem = (list, ideaId) =>
-  list.filter((item, index) => item.id !== ideaId);
-
-const updateListItem = (list, ideaObj) => {
-  return list.map((item, index) => {
-    if (item.id !== ideaObj.id) {
-      return item;
-    }
-
-    return {
-      ...item,
-      ...ideaObj,
-    };
-  });
-};
-
-/* 
-
-    TODO: MAKE AS SAGA ACTION
-
-*/
-const determineEligibleList = (ideaList, randomSelectedIdea) =>
-  ideaList.slice().filter((entry) => entry.id !== randomSelectedIdea.id);
-
-const selectRandomIdea = (ideaList, randomSelectedIdea) => {
-  let eligibleList = ideaList.slice();
-  if (randomSelectedIdea)
-    eligibleList = determineEligibleList(ideaList, randomSelectedIdea);
-  return eligibleList[
-    Math.floor(Math.random() * Math.floor(eligibleList.length))
-  ];
+  isLoading: false,
 };
 
 const rootReducer = (state = initialState, action) => {
@@ -58,7 +24,6 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         userSelectedIdea: action.id,
-        isTaskOptionsDrawerVisible: !state.isTaskOptionsDrawerVisible,
       };
     }
     case ACTION_TYPES.RANDOM_SELECT_IDEA: {
@@ -71,20 +36,12 @@ const rootReducer = (state = initialState, action) => {
       };
     }
     case ACTION_TYPES.EDIT_IDEA: {
-      return {
-        ...state,
-        isEditMode: !state.isEditMode,
-        isTaskOptionsDrawerVisible: !state.isTaskOptionsDrawerVisible,
-        // userSelectedIdea: state.ideaList
-        //   .slice()
-        //   .filter((item) => item.id === action.id)[0],
-      };
+      return state;
     }
     case ACTION_TYPES.COMMIT_EDIT_IDEA: {
       return {
         ...state,
-        isEditMode: !state.isEditMode,
-        ideaList: updateListItem(state.ideaList, action.ideaObj),
+        ideaList: updateListItem(state.ideaList, action.idea),
       };
     }
     case ACTION_TYPES.DELETE_IDEA: {
@@ -92,7 +49,6 @@ const rootReducer = (state = initialState, action) => {
         ...state,
         ideaList: removeListItem(state.ideaList, action.id),
         userSelectedIdea: null,
-        isTaskOptionsDrawerVisible: !state.isTaskOptionsDrawerVisible,
       };
     }
     case ACTION_TYPES.TOGGLE_TASK_OPTIONS_DRAWER: {
@@ -105,7 +61,24 @@ const rootReducer = (state = initialState, action) => {
       return {
         ...state,
         isEditMode: !state.isEditMode,
-        userSelectedIdea: null,
+      };
+    }
+    case ACTION_TYPES.TOGGLE_IS_LOADING: {
+      return { ...state, isLoading: !state.isLoading };
+    }
+    case ACTION_TYPES.FETCH_IDEAS: {
+      return state;
+    }
+    case ACTION_TYPES.FETCH_IDEAS_SUCCESS: {
+      return {
+        ...state,
+        ideaList: action.ideas ? action.ideas : [],
+      };
+    }
+    case ACTION_TYPES.FETCH_IDEAS_FAILURE: {
+      return {
+        ...state,
+        error: "Ooops",
       };
     }
     default:

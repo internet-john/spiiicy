@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { Icon, Input } from "react-native-elements";
 
 import {
@@ -23,14 +23,8 @@ const IdeaInput = ({ idea }) => {
   const handleClearEditInput = () => editInputRef.current.clear();
 
   const handleSubmit = () => {
-    let idea;
-    /*
-    will be problematic on edits.
-     first check if idea exists in ideaList..
-     if so..retain id
-     */
-    idea = {
-      id: `id${input}`,
+    const idea = {
+      id: Date.now(),
       value: input,
     };
 

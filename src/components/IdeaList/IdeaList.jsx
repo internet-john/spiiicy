@@ -1,6 +1,12 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { FlatList, StyleSheet, View, Text } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  View,
+  Text,
+} from "react-native";
 
 import Idea from "../Idea";
 import IdeaOptionsDrawer from "../IdeaOptionsDrawer";
@@ -15,9 +21,11 @@ const renderItem = ({ item }) => (
 );
 
 const IdeaList = () => {
-  const ideaList = useSelector((state) => state.ideaList);
+  const { ideaList, isLoading } = useSelector((state) => state);
 
-  return (
+  return isLoading ? (
+    <ActivityIndicator size="large" />
+  ) : (
     <FlatList
       style={styles.taskList}
       keyExtractor={keyExtractor}

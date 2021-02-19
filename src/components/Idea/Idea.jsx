@@ -1,22 +1,17 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { ListItem, Icon } from "react-native-elements";
+import { ListItem } from "react-native-elements";
 import OptionsIcon from "react-native-vector-icons/SimpleLineIcons";
 
-import { IdeaInput } from "../Input";
+import { IdeaInputEdit } from "../Input";
 import { userSelectIdea } from "../../actions/actionCreators";
 
 const Idea = ({ idea }) => {
   const dispatch = useDispatch();
-  const {
-    randomSelectedIdea,
-    userSelectedIdea,
-    isEditMode,
-    isTaskOptionsDrawerVisible,
-  } = useSelector((state) => state);
-
-  const handleClearEditInput = () => editInputRef.current.clear();
+  const { randomSelectedIdea, userSelectedIdea, isEditMode } = useSelector(
+    (state) => state
+  );
 
   const handleSelectIdea = () => dispatch(userSelectIdea(idea));
 
@@ -37,7 +32,7 @@ const Idea = ({ idea }) => {
       idea &&
       userSelectedIdea &&
       idea.id === userSelectedIdea.id ? (
-        <IdeaInput idea={idea} />
+        <IdeaInputEdit idea={idea} />
       ) : (
         <>
           <Text

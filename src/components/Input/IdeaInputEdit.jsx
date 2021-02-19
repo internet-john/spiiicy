@@ -8,61 +8,63 @@ import { commitEditIdea, toggleEditMode } from "../../actions/actionCreators";
 const IdeaInputEdit = ({ idea }) => {
   const editInputRef = useRef({});
   const dispatch = useDispatch();
-  const { ideaList, isEditMode, userSelectedIdea } = useSelector(
-    (state) => state
-  );
   const [input, updateInput] = useState("");
 
   const handleChangeText = (value) => updateInput(value);
 
-  const handleSubmitEdit = () => dispatch(commitEditIdea(idea));
+  const handleSubmitEdit = () => {
+    const editedIdea = { ...idea, value: input };
+
+    dispatch(commitEditIdea(editedIdea));
+  };
 
   const handleClearEditInput = () => editInputRef.current.clear();
 
   const handleEndEditing = () => dispatch(toggleEditMode());
 
   return (
-    <View>
-      <Input
-        ref={editInputRef}
-        style={styles.input}
-        inputContainerStyle={styles.editInputContainerStyle}
-        rightIcon={
-          <Icon
-            iconStyle={styles.clearInputButton}
-            color={"#808080"}
-            size={16}
-            type={"antdesign"}
-            name={"closecircle"}
-            onPress={handleClearEditInput}
-          />
-        }
-        autoFocus={true}
-        autoCorrect={false}
-        placeholder={userSelectedIdea.value}
-        placeholderTextColor={"#FFF"}
-        onChangeText={handleChangeText}
-        onSubmitEditing={handleSubmitEdit}
-        onEndEditing={handleEndEditing}
-        enablesReturnKeyAutomatically={true}
-      />
-    </View>
+    <Input
+      ref={editInputRef}
+      style={styles.editInput}
+      inputContainerStyle={styles.editInputContainerStyle}
+      rightIcon={
+        <Icon
+          iconStyle={styles.clearEditInputButton}
+          color={"#808080"}
+          size={16}
+          type={"antdesign"}
+          name={"closecircle"}
+          onPress={handleClearEditInput}
+        />
+      }
+      autoFocus={true}
+      placeholder={"Enter an idea here"}
+      placeholderTextColor={"#FFF"}
+      onChangeText={handleChangeText}
+      onSubmitEditing={handleSubmitEdit}
+      onEndEditing={handleEndEditing}
+      enablesReturnKeyAutomatically={true}
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  input: {
+  clearEditInputButton: {
+    color: "#FFF",
+    marginLeft: 10,
+  },
+  editInput: {
     color: "#FFF",
     backgroundColor: "#252525",
     borderRadius: 5,
     padding: 10,
   },
-  inputContainerStyle: {
+  editInputContainerStyle: {
+    marginLeft: -10,
+    marginRight: 5,
+    marginBottom: -20,
     borderBottomWidth: 0,
-    color: "#FFF",
-  },
-  clearInputButton: {
-    marginLeft: 10,
+    maxHeight: 40,
   },
 });
 
