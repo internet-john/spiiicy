@@ -44,6 +44,8 @@ const IdeaInputEdit = ({ idea }) => {
       onSubmitEditing={handleSubmitEdit}
       onEndEditing={handleEndEditing}
       enablesReturnKeyAutomatically={true}
+      autoCapitalize={"none"}
+      autoCorrect={false}
     />
   );
 };
