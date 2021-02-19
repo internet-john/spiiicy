@@ -63,6 +63,8 @@ const IdeaInput = ({ idea }) => {
       onChangeText={handleChangeText}
       onSubmitEditing={handleSubmit}
       enablesReturnKeyAutomatically={true}
+      autoCapitalize={"none"}
+      autoCorrect={false}
     />
   );
 
